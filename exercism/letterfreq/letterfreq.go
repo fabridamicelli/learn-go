@@ -1,7 +1,6 @@
 package letterfreq
 
 import (
-	"fmt"
 	"sort"
 	"sync"
 	"unicode"
@@ -50,7 +49,6 @@ func LetterFreq(texts []string) []map[rune]int {
 		}()
 	}
 	wg.Wait()
-	fmt.Println(res)
 	// Return sorted results for easier testing
 	sort.Slice(res, func(i, j int) bool {
 		return res[i].id < res[j].id
