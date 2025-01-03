@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 func main() {
@@ -39,8 +38,14 @@ func main() {
 	// }
 	// fmt.Println(string(all))
 
-	b := "hhello"
-	s := strings.TrimLeft(b, "h")
+	// b := "hhello"
+	// s := strings.TrimLeft(b, "h")
+	// fmt.Println(s)
+
+	m := map[rune]int{'h': 1}
+	s, _ := m['h']
+	ss, _ := m['g']
 	fmt.Println(s)
+	fmt.Println(ss)
 
 }

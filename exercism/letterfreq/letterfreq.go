@@ -2,53 +2,39 @@ package letterfreq
 
 import (
 	"sort"
-	"sync"
 	"unicode"
 )
 
-func doCount(t string, wg *sync.WaitGroup) map[rune]int {
-	defer wg.Done()
+func doCount(t string) map[rune]int {
 	count := make(map[rune]int)
 	runes := []rune(t)
 	for _, r := range runes {
 		if unicode.IsSpace(r) {
 			continue
 		}
-		if _, ok := count[r]; ok {
-			count[r]++
-		} else {
-			count[r] = 1
-		}
+		count[r]++
 	}
 	return count
 }
 
-func arrayHasRune(r rune, arr []rune) bool {
-	for _, v := range arr {
-		if v == r {
-			return true
-		}
-	}
-	return false
-}
-
-type Result struct {
+type result struct {
 	count map[rune]int
 	id    int
 }
 
 func LetterFreq(texts []string) []map[rune]int {
-
-	var wg sync.WaitGroup
-	wg.Add(len(texts))
-	res := make([]Result, 0)
+	resChan := make(chan result, len(texts))
 	for id, t := range texts {
 		go func() {
-			partialCount := doCount(t, &wg)
-			res = append(res, Result{id: id, count: partialCount})
+			partialCount := doCount(t)
+			resChan <- result{id: id, count: partialCount}
 		}()
 	}
-	wg.Wait()
+	res := make([]result, 0, len(texts))
+	for range texts {
+		res = append(res, <-resChan)
+	}
+	close(resChan)
 	// Return sorted results for easier testing
 	sort.Slice(res, func(i, j int) bool {
 		return res[i].id < res[j].id
